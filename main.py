@@ -20,13 +20,20 @@ def home():
     today_str = f' {day} ' if day < 10 else f'{day} '
     cal_highlighted = cal.replace(today_str, f'[{day}]')
 
-    # Simple HTML
+    # Simple HTML with responsive design
     html = f'''
     <!DOCTYPE html>
     <html>
     <head>
         <title>📅 Simple Calendar | Replit</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
+            * {{
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }}
+
             body {{
                 font-family: Arial, sans-serif;
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -35,77 +42,168 @@ def home():
                 justify-content: center;
                 align-items: center;
                 margin: 0;
-                padding: 20px;
+                padding: 15px;
             }}
+
             .calendar-box {{
                 background: white;
-                padding: 30px;
+                padding: 25px 20px;
                 border-radius: 20px;
-                box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
                 text-align: center;
                 max-width: 500px;
                 width: 100%;
+                margin: 10px;
             }}
+
             h1 {{
                 color: #333;
-                margin-bottom: 10px;
+                margin-bottom: 8px;
+                font-size: clamp(1.5rem, 4vw, 2rem);
             }}
+
             .month-year {{
                 color: #667eea;
-                font-size: 1.5em;
+                font-size: clamp(1.2rem, 3vw, 1.5rem);
                 font-weight: bold;
-                margin: 20px 0;
+                margin: 15px 0;
             }}
+
             .calendar {{
                 background: #f8f9fa;
-                padding: 20px;
+                padding: 15px;
                 border-radius: 10px;
                 font-family: monospace;
-                font-size: 1.2em;
+                font-size: clamp(0.9rem, 2.5vw, 1.2rem);
                 white-space: pre;
                 text-align: center;
-                margin: 20px 0;
+                margin: 15px 0;
                 border: 2px solid #e9ecef;
+                overflow-x: auto;
             }}
+
             .today {{
                 background: #ff6b6b;
                 color: white;
-                padding: 2px 5px;
+                padding: 2px 4px;
                 border-radius: 3px;
                 font-weight: bold;
             }}
+
             .today-info {{
                 background: #e8f5e9;
-                padding: 15px;
+                padding: 12px;
                 border-radius: 10px;
-                margin: 20px 0;
+                margin: 15px 0;
                 font-weight: bold;
                 color: #2e7d32;
+                font-size: clamp(0.9rem, 2.5vw, 1rem);
             }}
+
             .nav-buttons {{
                 display: flex;
                 justify-content: center;
-                gap: 15px;
-                margin-top: 25px;
+                gap: 10px;
+                margin-top: 20px;
+                flex-wrap: wrap;
             }}
+
             .nav-btn {{
                 background: #667eea;
                 color: white;
                 border: none;
-                padding: 12px 25px;
+                padding: clamp(10px, 3vw, 12px) clamp(20px, 4vw, 25px);
                 border-radius: 8px;
                 cursor: pointer;
-                font-size: 16px;
+                font-size: clamp(14px, 3vw, 16px);
                 transition: all 0.3s;
+                min-width: 120px;
+                flex: 1;
+                max-width: 150px;
             }}
-            .nav-btn:hover {{
+
+            .nav-btn:hover, .nav-btn:active {{
                 background: #764ba2;
                 transform: translateY(-2px);
             }}
+
+            .today-btn {{
+                background: #ff6b6b;
+            }}
+
+            .today-btn:hover, .today-btn:active {{
+                background: #ff5252;
+            }}
+
             .replit-footer {{
-                margin-top: 25px;
+                margin-top: 20px;
                 color: #666;
-                font-size: 0.9em;
+                font-size: clamp(0.8rem, 2vw, 0.9rem);
+            }}
+
+            /* Mobile-specific adjustments */
+            @media (max-width: 480px) {{
+                body {{
+                    padding: 10px;
+                    align-items: flex-start;
+                    min-height: 100vh;
+                    height: auto;
+                }}
+
+                .calendar-box {{
+                    padding: 20px 15px;
+                    margin: 5px;
+                    border-radius: 15px;
+                }}
+
+                .calendar {{
+                    padding: 10px;
+                    font-size: 0.9rem;
+                    overflow-x: auto;
+                    -webkit-overflow-scrolling: touch;
+                }}
+
+                .nav-buttons {{
+                    flex-direction: row;
+                    gap: 8px;
+                }}
+
+                .nav-btn {{
+                    min-width: 100px;
+                    padding: 10px 15px;
+                    font-size: 14px;
+                }}
+            }}
+
+            /* Tablet adjustments */
+            @media (min-width: 481px) and (max-width: 768px) {{
+                .calendar-box {{
+                    max-width: 450px;
+                    padding: 25px;
+                }}
+
+                .calendar {{
+                    font-size: 1rem;
+                }}
+            }}
+
+            /* Large screen adjustments */
+            @media (min-width: 1200px) {{
+                .calendar-box {{
+                    max-width: 550px;
+                    padding: 30px;
+                }}
+            }}
+
+            /* Touch device improvements */
+            @media (hover: none) {{
+                .nav-btn:hover {{
+                    transform: none;
+                }}
+
+                .nav-btn:active {{
+                    transform: scale(0.98);
+                }}
             }}
         </style>
     </head>
@@ -167,6 +265,34 @@ def home():
                     window.location.href = '/';
                 }}
             }});
+
+            // Touch swipe support for mobile
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            document.body.addEventListener('touchstart', (e) => {{
+                touchStartX = e.changedTouches[0].screenX;
+            }}, false);
+
+            document.body.addEventListener('touchend', (e) => {{
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }}, false);
+
+            function handleSwipe() {{
+                const swipeThreshold = 50;
+                const diff = touchStartX - touchEndX;
+
+                if (Math.abs(diff) > swipeThreshold) {{
+                    if (diff > 0) {{
+                        // Swipe left - next month
+                        changeMonth(1);
+                    }} else {{
+                        // Swipe right - previous month
+                        changeMonth(-1);
+                    }}
+                }}
+            }}
         </script>
     </body>
     </html>
@@ -199,7 +325,14 @@ def specific_month(year, month):
     <html>
     <head>
         <title>📅 Calendar | {month_name} {year}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
+            * {{
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }}
+
             body {{
                 font-family: Arial, sans-serif;
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -208,83 +341,175 @@ def specific_month(year, month):
                 justify-content: center;
                 align-items: center;
                 margin: 0;
-                padding: 20px;
+                padding: 15px;
             }}
+
             .calendar-box {{
                 background: white;
-                padding: 30px;
+                padding: 25px 20px;
                 border-radius: 20px;
-                box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
                 text-align: center;
                 max-width: 500px;
                 width: 100%;
+                margin: 10px;
             }}
+
             h1 {{
                 color: #333;
-                margin-bottom: 10px;
+                margin-bottom: 8px;
+                font-size: clamp(1.5rem, 4vw, 2rem);
             }}
+
             .month-year {{
                 color: #667eea;
-                font-size: 1.5em;
+                font-size: clamp(1.2rem, 3vw, 1.5rem);
                 font-weight: bold;
-                margin: 20px 0;
+                margin: 15px 0;
             }}
+
             .calendar {{
                 background: #f8f9fa;
-                padding: 20px;
+                padding: 15px;
                 border-radius: 10px;
                 font-family: monospace;
-                font-size: 1.2em;
+                font-size: clamp(0.9rem, 2.5vw, 1.2rem);
                 white-space: pre;
                 text-align: center;
-                margin: 20px 0;
+                margin: 15px 0;
                 border: 2px solid #e9ecef;
+                overflow-x: auto;
             }}
+
             .today {{
                 background: #ff6b6b;
                 color: white;
-                padding: 2px 5px;
+                padding: 2px 4px;
                 border-radius: 3px;
                 font-weight: bold;
             }}
+
             .today-info {{
                 background: #e8f5e9;
-                padding: 15px;
+                padding: 12px;
                 border-radius: 10px;
-                margin: 20px 0;
+                margin: 15px 0;
                 font-weight: bold;
                 color: #2e7d32;
+                font-size: clamp(0.9rem, 2.5vw, 1rem);
             }}
+
             .nav-buttons {{
                 display: flex;
                 justify-content: center;
-                gap: 15px;
-                margin-top: 25px;
+                gap: 10px;
+                margin-top: 20px;
+                flex-wrap: wrap;
             }}
+
             .nav-btn {{
                 background: #667eea;
                 color: white;
                 border: none;
-                padding: 12px 25px;
+                padding: clamp(10px, 3vw, 12px) clamp(20px, 4vw, 25px);
                 border-radius: 8px;
                 cursor: pointer;
-                font-size: 16px;
+                font-size: clamp(14px, 3vw, 16px);
                 transition: all 0.3s;
+                min-width: 100px;
+                flex: 1;
+                max-width: 150px;
             }}
-            .nav-btn:hover {{
+
+            .nav-btn:hover, .nav-btn:active {{
                 background: #764ba2;
                 transform: translateY(-2px);
             }}
+
             .today-btn {{
                 background: #ff6b6b;
             }}
-            .today-btn:hover {{
+
+            .today-btn:hover, .today-btn:active {{
                 background: #ff5252;
             }}
+
             .replit-footer {{
-                margin-top: 25px;
+                margin-top: 20px;
                 color: #666;
-                font-size: 0.9em;
+                font-size: clamp(0.8rem, 2vw, 0.9rem);
+            }}
+
+            /* Mobile-specific adjustments */
+            @media (max-width: 480px) {{
+                body {{
+                    padding: 10px;
+                    align-items: flex-start;
+                    min-height: 100vh;
+                    height: auto;
+                }}
+
+                .calendar-box {{
+                    padding: 20px 15px;
+                    margin: 5px;
+                    border-radius: 15px;
+                }}
+
+                .calendar {{
+                    padding: 10px;
+                    font-size: 0.9rem;
+                    overflow-x: auto;
+                    -webkit-overflow-scrolling: touch;
+                }}
+
+                .nav-buttons {{
+                    flex-direction: row;
+                    gap: 8px;
+                }}
+
+                .nav-btn {{
+                    min-width: 80px;
+                    padding: 10px 12px;
+                    font-size: 14px;
+                }}
+
+                .today-btn {{
+                    order: -1; /* Move Today button to top on mobile */
+                    flex-basis: 100%;
+                    max-width: 200px;
+                    margin-bottom: 5px;
+                }}
+            }}
+
+            /* Tablet adjustments */
+            @media (min-width: 481px) and (max-width: 768px) {{
+                .calendar-box {{
+                    max-width: 450px;
+                    padding: 25px;
+                }}
+
+                .calendar {{
+                    font-size: 1rem;
+                }}
+            }}
+
+            /* Large screen adjustments */
+            @media (min-width: 1200px) {{
+                .calendar-box {{
+                    max-width: 550px;
+                    padding: 30px;
+                }}
+            }}
+
+            /* Touch device improvements */
+            @media (hover: none) {{
+                .nav-btn:hover {{
+                    transform: none;
+                }}
+
+                .nav-btn:active {{
+                    transform: scale(0.98);
+                }}
             }}
         </style>
     </head>
@@ -312,7 +537,7 @@ def specific_month(year, month):
             </div>
 
             <div class="replit-footer">
-                Made with Flask on Replit
+              prepared by:Aayushi KC
             </div>
         </div>
 
@@ -354,6 +579,34 @@ def specific_month(year, month):
                     goToday();
                 }}
             }});
+
+            // Touch swipe support for mobile
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            document.body.addEventListener('touchstart', (e) => {{
+                touchStartX = e.changedTouches[0].screenX;
+            }}, false);
+
+            document.body.addEventListener('touchend', (e) => {{
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }}, false);
+
+            function handleSwipe() {{
+                const swipeThreshold = 50;
+                const diff = touchStartX - touchEndX;
+
+                if (Math.abs(diff) > swipeThreshold) {{
+                    if (diff > 0) {{
+                        // Swipe left - next month
+                        changeMonth(1);
+                    }} else {{
+                        // Swipe right - previous month
+                        changeMonth(-1);
+                    }}
+                }}
+            }}
         </script>
     </body>
     </html>
